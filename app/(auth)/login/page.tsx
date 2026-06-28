@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Film } from 'lucide-react'
 
 function toEmail(username: string) {
-  return `${username.toLowerCase().replace(/\s+/g, '_')}@cineflow.app`
+  return `${username.toLowerCase().replace(/[^a-z0-9]/g, '_')}@cineflow.app`
 }
 
 export default function LoginPage() {
