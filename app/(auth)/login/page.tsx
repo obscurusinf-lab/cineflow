@@ -5,8 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Film } from 'lucide-react'
 
+function toEmail(username: string) {
+  return `${username.toLowerCase().replace(/\s+/g, '_')}@cineflow.app`
+}
+
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [isRegister, setIsRegister] = useState(false)
@@ -20,17 +24,19 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
+    const email = toEmail(username)
+
     if (isRegister) {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullName } },
+        options: { data: { full_name: fullName || username } },
       })
       if (error) setError(error.message)
       else router.push('/projects')
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) setError('Неверный email или пароль')
+      if (error) setError('Неверный логин или пароль')
       else router.push('/projects')
     }
     setLoading(false)
@@ -59,21 +65,20 @@ export default function LoginPage() {
                   type="text"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
-                  required
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
                   placeholder="Иван Иванов"
                 />
               </div>
             )}
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">Email</label>
+              <label className="block text-sm text-zinc-400 mb-1">Логин</label>
               <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
                 required
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
-                placeholder="you@example.com"
+                placeholder="ivan_petrov"
               />
             </div>
             <div>
